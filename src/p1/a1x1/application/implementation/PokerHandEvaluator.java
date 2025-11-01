@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import application.cards.Card;
-import application.cards.Card.Rank;
-import application.cards.Card.Suit;
-import supportStuff.applicationSupport.HandRanking;
+import p1.a1x1.application.cards.Card;
+import p1.a1x1.application.cards.Card.Rank;
+import p1.a1x1.application.cards.Card.Suit;
+import p1.a1x1.supportStuff.applicationSupport.HandRanking;
 
 public class PokerHandEvaluator {
     
     private List<Card[]> cardCombinations;
     
     public PokerHandEvaluator() {
+        
+        
         
     }
     
@@ -71,14 +73,7 @@ public class PokerHandEvaluator {
             }
         }
         
-        /*
-        for (int i = 0; i < 4; i++) {
-            Card[] newCards = Arrays.copyOf(communityCards,communityCards.length);
-            newCards[i] = playerCards[0];
-            newCards[i+1] = playerCards[1];
-            cardCombinations.add(newCards);
-        }
-        */
+    
         
     }
     
