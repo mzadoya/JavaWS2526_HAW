@@ -3,10 +3,10 @@ package p1.a1x2.resistor;
 import java.util.*;
 
 /**
- * Stellt zusammengesetze Widerstandnetze dar
+ * Abstrakte Basisklasse fuer zusammengesetze Widerstandnetze
  * 
  * @author Maksym Zadoya
- * @version 2025/10/27 #1
+ * @version 2025/10/29 #1
  *  
  */
 public abstract class ComposedResistor implements ResistanceNet{
@@ -23,7 +23,7 @@ public abstract class ComposedResistor implements ResistanceNet{
     /**
      * Liefert ein Array der Widerstandnetze aus denen das zusammengesetze 
      * Widerstandnetz zusammengesetzt ist in der Original-Reihenfolge, also genau
-     * in der gleichen Reihenfolge in der diese an den Konstruktor übergeben wurden
+     * in der gleichen Reihenfolge in der diese an den Konstruktor uebergeben wurden
      * 
      * 
      * @return ein Array der Widerstandsnetze
@@ -32,6 +32,13 @@ public abstract class ComposedResistor implements ResistanceNet{
         return net;
     }
     
-  
-   
+    @Override
+    public int getNumberOfResistors() {
+        int resistorsCounter = 0;
+        for (ResistanceNet net : this.net) {
+            resistorsCounter += net.getNumberOfResistors();
+        }
+        return resistorsCounter;
+    }
+    
 }

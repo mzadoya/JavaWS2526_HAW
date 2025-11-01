@@ -32,7 +32,7 @@ public class OrdinaryResistor extends Resistor{
     }
     
     /**
-     * Gibt die Anzahl der Widerstände zurück
+     * Gibt die Anzahl der Widerstaende zurück
      * 
      * Da ein Widerstand ein einzelner Widerstand ist, wird immer 
      * 1 zurueckgegeben
