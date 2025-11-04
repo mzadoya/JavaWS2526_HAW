@@ -61,6 +61,7 @@ public class PokerHandEvaluator {
             for (int j = 0; j < 5; j++) {
                 Card[] newCards = Arrays.copyOf(communityCards, communityCards.length);
                 newCards[j] = playerCards[i];
+                Arrays.sort(newCards);
                 cardCombinations.add(newCards);
             }
         }
@@ -70,6 +71,7 @@ public class PokerHandEvaluator {
                 Card[] newCards = Arrays.copyOf(communityCards, communityCards.length);
                 newCards[i] = playerCards[0];
                 newCards[j] = playerCards[1];
+                Arrays.sort(newCards);
                 cardCombinations.add(newCards);
             }
         }
@@ -206,7 +208,7 @@ public class PokerHandEvaluator {
 
     private boolean straigtChecker(Card[] cards) { 
 
-        Arrays.sort(cards);
+        //Arrays.sort(cards);
         
         if (cards[0].getRank().value() == 2 && cards[1].getRank().value() == 3 && cards[2].getRank().value() == 4 &&
                 cards[3].getRank().value() == 5 && cards[4].getRank().value() == 14)  {
@@ -225,7 +227,7 @@ public class PokerHandEvaluator {
     private void highCard() {  
         
         bestCards = cardCombinations.get(0);
-        Arrays.sort(bestCards);
+        //Arrays.sort(bestCards);
         
         for (Card[] cards : cardCombinations) {
             Arrays.sort(cards);
@@ -280,43 +282,230 @@ public class PokerHandEvaluator {
         return false;
     }
     
+   
+    
     //TODO: Maybe Varagrs 
     
     private int compareHighCard(Card[] player1, Card[] player2) {
+        int anzahlKartenP1 = player1.length;
         
+        for (int i = anzahlKartenP1 - 1; i >= 0; i--) {
+            if (player1[i].getRank().value() > player2[i].getRank().value()) {
+                return 1;
+            }
+            else if (player1[i].getRank().value() < player2[i].getRank().value()) {
+                return 2;
+            }
+        }
+        return 0;
     }
     
     private int compareOnePair(Card[] player1, Card[] player2) {
-        
+        Card pairPlayer1 = getPaar(player1, 3);
+        Card pairPlayer2 = getPaar(player2, 3);
+        if (pairPlayer1.getRank().value() > pairPlayer2.getRank().value()) {
+            return 1;
+        }
+        else if (pairPlayer1.getRank().value() < pairPlayer2.getRank().value()) {
+            return -1;
+        }
+        else {
+            Card secondPairPlayer1 = getPaar(player1, 2, pairPlayer1);
+            Card secondPairPlayer2 = getPaar(player2, 2, pairPlayer2);
+            if (secondPairPlayer1.getRank().value() > secondPairPlayer2.getRank().value()) {
+                return 1;
+            }
+            else if (secondPairPlayer1.getRank().value() < secondPairPlayer2.getRank().value()) {
+                return -1;
+            }
+        }
+        return 0;
     }
     
     private int compareTwoPair(Card[] player1, Card[] player2) {
-     
+        Card fistPairPlayer1 = getPaar(player1, 3);
+        Card fistPairPlayer2 = getPaar(player2, 3);
+        if (fistPairPlayer1.getRank().value() > fistPairPlayer2.getRank().value()) {
+            return 1;
+        }
+        else if (fistPairPlayer1.getRank().value() < fistPairPlayer2.getRank().value()) {
+            return -1;
+        }
+        
+        else {
+            Card secondPairPlayer1 = getPaar(player1, 2, fistPairPlayer1);
+            Card secondPairPlayer2 = getPaar(player2, 2, fistPairPlayer2);
+            if (secondPairPlayer1.getRank().value() > secondPairPlayer2.getRank().value()) {
+                return 1;
+            }
+            else if (secondPairPlayer1.getRank().value() < secondPairPlayer2.getRank().value()) {
+                return -1;
+            }
+            else {
+                Card[] kickersPlayer1 = getKickers(player1,fistPairPlayer1, fistPairPlayer2);
+                Card[] kickersPlayer2 = getKickers(player2,fistPairPlayer2, secondPairPlayer2);
+                for (int i = 0; i < kickersPlayer1.length; i++) {
+                    if (kickersPlayer1[i].getRank().value() > kickersPlayer2[i].getRank().value()) {
+                        return 1;
+                    }
+                    else if (kickersPlayer1[i].getRank().value() < kickersPlayer2[i].getRank().value()) {
+                        return -1;
+                    }
+                }
+           
+            }
+        }
+        return 0;
     }
     
     private int compareTrips(Card[] player1, Card[] player2) {
-        
+        Card tripsPlayer1 = getPaar(player1, 3);
+        Card tripsPlayer2 = getPaar(player2, 3);
+        if (tripsPlayer1.getRank().value() > tripsPlayer2.getRank().value()) {
+            return 1;
+        }
+        else if (tripsPlayer1.getRank().value() < tripsPlayer2.getRank().value()) {
+            return -1;
+        }
+        else {
+            Card[] kickersPlayer1 = getKickers(player1,tripsPlayer1);
+            Card[] kickersPlayer2 = getKickers(player2,tripsPlayer2);
+            for (int i = 0; i < kickersPlayer1.length; i++) {
+                if (kickersPlayer1[i].getRank().value() > kickersPlayer2[i].getRank().value()) {
+                    return 1;
+                }
+                else if (kickersPlayer1[i].getRank().value() < kickersPlayer2[i].getRank().value()) {
+                    return -1;
+                }
+            }
+       
+        }
+        return 0;
     }
     
     private int compareStright(Card[] player1, Card[] player2) {
-        
+        if (player1[player1.length].getRank().value() > player2[player2.length].getRank().value()) {
+            return 1;
+        }
+        else if (player1[player1.length].getRank().value() > player2[player2.length].getRank().value()) {
+            return -1;
+        }
+        return 0;
     }
     
     private int compareFlush(Card[] player1, Card[] player2) {
+        int anzahlKartenP1 = player1.length;
         
+        for (int i = anzahlKartenP1 - 1; i >= 0; i--) {
+            if (player1[i].getRank().value() > player2[i].getRank().value()) {
+                return 1;
+            }
+            else if (player1[i].getRank().value() < player2[i].getRank().value()) {
+                return -1;
+            }
+        }
+        return 0;
     }
     
     private int compareFullHouse(Card[] player1, Card[] player2) {
+        Card tripsPlayer1 = getPaar(player1, 3);
+        Card tripsPlayer2 = getPaar(player2, 3);
+        if (tripsPlayer1.getRank().value() > tripsPlayer2.getRank().value()) {
+            return 1;
+        }
+        else if (tripsPlayer1.getRank().value() < tripsPlayer2.getRank().value()) {
+            return -1;
+        }
         
+        else {
+            Card pairPlayer1 = getPaar(player1, 2, tripsPlayer1);
+            Card pairPlayer2 = getPaar(player2, 2, tripsPlayer2);
+            if (pairPlayer1.getRank().value() > pairPlayer2.getRank().value()) {
+                return 1;
+            }
+            else if (pairPlayer1.getRank().value() < pairPlayer2.getRank().value()) {
+                return -1;
+            }
+        }
+        return 0;
     }
     
     private int compareQuads(Card[] player1, Card[] player2) {
-        
+        Card vierlingPlayer1 = getPaar(player1, 4);
+        Card vierlingPlayer2 = getPaar(player2, 4);
+        if (vierlingPlayer1.getRank().value() > vierlingPlayer2.getRank().value()) {
+            return 1;
+        }
+        else if (vierlingPlayer1.getRank().value() < vierlingPlayer2.getRank().value()) {
+            return -1;
+        }
+        else {
+            Card[] kickersPlayer1 = getKickers(player1,vierlingPlayer1);
+            Card[] kickersPlayer2 = getKickers(player2,vierlingPlayer2);
+            for (int i = 0; i < kickersPlayer1.length; i++) {
+                if (kickersPlayer1[i].getRank().value() > kickersPlayer2[i].getRank().value()) {
+                    return 1;
+                }
+                else if (kickersPlayer1[i].getRank().value() < kickersPlayer2[i].getRank().value()) {
+                    return -1;
+                }
+            }
+        }
+        return 0;
     }
     
     private int compareStrightFlush(Card[] player1, Card[] player2) {
      
+        if (player1[player1.length].getRank().value() > player2[player2.length].getRank().value()) {
+            return 1;
+        }
+        else if (player1[player1.length].getRank().value() > player2[player2.length].getRank().value()) {
+            return -1;
+        }
+        return 0;
     }
+    
+    private Card getPaar(Card[] cards, int matches, Card exception) { 
+        
+        
+        for (int i = cards.length - 1; i >= 0; i--) {
+            if (exception == null || !exception.getRank().equals(cards[i].getRank())) {
+                Card card = cards[i];
+                int counter = 1;
+                for (int j = i - 1; j >=0; j--) {
+                    if (card.getRank().equals(cards[j].getRank())) {
+                        counter ++;
+                    }
+                    if (counter == matches) {
+                        return card;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    private Card getPaar(Card[] cards, int matches) {
+        return getPaar(cards, matches, null);
+    }
+    
+    private Card[] getKickers(Card[] cards, Card exception, Card secondException) {
+        //Card[] kickers = new Card[cards.length];
+        List<Card> kickers = new ArrayList<>();
+        for (Card c : cards) {
+            if (!c.getRank().equals(exception.getRank()) && secondException.getRank()!= null && !c.getRank().equals(secondException.getRank())) {
+               kickers.add(c);
+            }
+        }
+        Card[] toReturn = kickers.toArray(new Card[0]);
+        Arrays.sort(toReturn);
+        return toReturn;
+        
+    }
+    
+    private Card[] getKickers(Card[] cards, Card exception) {
+        return getKickers(cards, exception, null);
+    }
+    
 
 }
-
