@@ -147,7 +147,7 @@ public class PokerHandEvaluator {
     private boolean isStraight() {
 
         for (Card[] cards : cardCombinations) {
-            if (flushChecker(cards)) {
+            if (straigtChecker(cards)) {
                 bestCards = cards;
                 return true;
             }
@@ -198,8 +198,8 @@ public class PokerHandEvaluator {
     private boolean flushChecker(Card[] cards) {
 
         Suit suit = cards[0].getSuit();
-        if (suit == cards[1].getSuit() && suit == cards[2].getSuit() && suit == cards[2].getSuit()
-                && suit == cards[3].getSuit() && suit == cards[4].getSuit()) {  
+        if (suit == cards[1].getSuit() && suit == cards[2].getSuit() && 
+                suit == cards[3].getSuit() && suit == cards[4].getSuit()) {  
             return true;
         }
 
@@ -294,15 +294,15 @@ public class PokerHandEvaluator {
                 return 1;
             }
             else if (player1[i].getRank().value() < player2[i].getRank().value()) {
-                return 2;
+                return -1;
             }
         }
         return 0;
     }
     
     private int compareOnePair(Card[] player1, Card[] player2) {
-        Card pairPlayer1 = getPaar(player1, 3);
-        Card pairPlayer2 = getPaar(player2, 3);
+        Card pairPlayer1 = getPaar(player1, 2);
+        Card pairPlayer2 = getPaar(player2, 2);
         if (pairPlayer1.getRank().value() > pairPlayer2.getRank().value()) {
             return 1;
         }
@@ -310,21 +310,23 @@ public class PokerHandEvaluator {
             return -1;
         }
         else {
-            Card secondPairPlayer1 = getPaar(player1, 2, pairPlayer1);
-            Card secondPairPlayer2 = getPaar(player2, 2, pairPlayer2);
-            if (secondPairPlayer1.getRank().value() > secondPairPlayer2.getRank().value()) {
-                return 1;
-            }
-            else if (secondPairPlayer1.getRank().value() < secondPairPlayer2.getRank().value()) {
-                return -1;
+            Card[] kickersPlayer1 = getKickers(player1, pairPlayer1);
+            Card[] kickersPlayer2 = getKickers(player2, pairPlayer2);
+            for (int i = 0; i < kickersPlayer1.length; i++) {
+                if (kickersPlayer1[i].getRank().value() > kickersPlayer2[i].getRank().value()) {
+                    return 1;
+                }
+                else if (kickersPlayer1[i].getRank().value() < kickersPlayer2[i].getRank().value()) {
+                    return -1;
+                }
             }
         }
         return 0;
     }
     
     private int compareTwoPair(Card[] player1, Card[] player2) {
-        Card fistPairPlayer1 = getPaar(player1, 3);
-        Card fistPairPlayer2 = getPaar(player2, 3);
+        Card fistPairPlayer1 = getPaar(player1, 2);
+        Card fistPairPlayer2 = getPaar(player2, 2);
         if (fistPairPlayer1.getRank().value() > fistPairPlayer2.getRank().value()) {
             return 1;
         }
@@ -342,7 +344,7 @@ public class PokerHandEvaluator {
                 return -1;
             }
             else {
-                Card[] kickersPlayer1 = getKickers(player1,fistPairPlayer1, fistPairPlayer2);
+                Card[] kickersPlayer1 = getKickers(player1,fistPairPlayer1, secondPairPlayer1);
                 Card[] kickersPlayer2 = getKickers(player2,fistPairPlayer2, secondPairPlayer2);
                 for (int i = 0; i < kickersPlayer1.length; i++) {
                     if (kickersPlayer1[i].getRank().value() > kickersPlayer2[i].getRank().value()) {
@@ -384,10 +386,10 @@ public class PokerHandEvaluator {
     }
     
     private int compareStright(Card[] player1, Card[] player2) {
-        if (player1[player1.length].getRank().value() > player2[player2.length].getRank().value()) {
+        if (player1[player1.length-1].getRank().value() > player2[player2.length-1].getRank().value()) {
             return 1;
         }
-        else if (player1[player1.length].getRank().value() > player2[player2.length].getRank().value()) {
+        else if (player1[player1.length-1].getRank().value() < player2[player2.length-1].getRank().value()) {
             return -1;
         }
         return 0;
@@ -456,17 +458,16 @@ public class PokerHandEvaluator {
     
     private int compareStrightFlush(Card[] player1, Card[] player2) {
      
-        if (player1[player1.length].getRank().value() > player2[player2.length].getRank().value()) {
+        if (player1[player1.length-1].getRank().value() > player2[player2.length-1].getRank().value()) {
             return 1;
         }
-        else if (player1[player1.length].getRank().value() > player2[player2.length].getRank().value()) {
+        else if (player1[player1.length-1].getRank().value() < player2[player2.length-1].getRank().value()) {
             return -1;
         }
         return 0;
     }
     
     private Card getPaar(Card[] cards, int matches, Card exception) { 
-        
         
         for (int i = cards.length - 1; i >= 0; i--) {
             if (exception == null || !exception.getRank().equals(cards[i].getRank())) {
@@ -493,7 +494,7 @@ public class PokerHandEvaluator {
         //Card[] kickers = new Card[cards.length];
         List<Card> kickers = new ArrayList<>();
         for (Card c : cards) {
-            if (!c.getRank().equals(exception.getRank()) && secondException.getRank()!= null && !c.getRank().equals(secondException.getRank())) {
+            if (!c.getRank().equals(exception.getRank()) && (secondException == null || !c.getRank().equals(secondException.getRank()))) {
                kickers.add(c);
             }
         }
@@ -507,5 +508,31 @@ public class PokerHandEvaluator {
         return getKickers(cards, exception, null);
     }
     
+    public int compareTwoHands(Card[] player1, Card[] player2, HandRanking type) {
+        
+        switch(type) {
+            
+            case HIGH_CARD: return compareHighCard(player1, player2);
+                
+            case ONE_PAIR: return compareOnePair(player1, player2);
+            
+            case TWO_PAIR: return compareTwoPair(player1, player2);
+                
+            case TRIPS: return compareTrips(player1, player2);
+                
+            case STRAIGHT: return compareStright(player1, player2);
+                
+            case FLUSH: return compareFlush(player1, player2);
+                
+            case FULL_HOUSE: return compareFullHouse(player1, player2);
+            
+            case QUADS: return compareQuads(player1, player2);
+            
+            case STRAIGHT_FLUSH: return compareStrightFlush(player1, player2);
+                
+            default: assert (false ): ""; //TODO: assert
+        }
+        return 0;
+    }
 
 }

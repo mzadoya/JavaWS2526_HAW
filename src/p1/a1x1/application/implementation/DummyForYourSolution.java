@@ -5,6 +5,13 @@ package p1.a1x1.application.implementation;
 import static p1.a1x1.application.cards.Card.*;                                         // just import it in case it might be needed
 import static p1.a1x1.application.cards.Card.Constant.*;                                // just import it in case it might be needed
 import static p1.a1x1.supportStuff.applicationSupport.HandRanking.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import application.cards.Card;
+import application.implementation.PokerHand;
+import application.implementation.PokerHandEvaluator;
 //
 import p1.a1x1.application.cards.*;                                                     // just import it in case it might be needed
 import p1.a1x1.application.cards.Card.*;                                                // just import it in case it might be needed
@@ -12,6 +19,10 @@ import p1.a1x1.supportStuff.applicationSupport.HandRanking;
 import p1.a1x1.supportStuff.testSupport.*;
 import p1.a1x1.supportStuff.utility.Version;
 import p1.a1x1.test.GameAnalyzer;
+import supportStuff.testSupport.ResultOfGame;
+import supportStuff.testSupport.ResultOfPlayer;
+import supportStuff.testSupport.TestCaseActual;
+
 
 
 public class DummyForYourSolution implements GameAnalyzer {
@@ -37,23 +48,83 @@ public class DummyForYourSolution implements GameAnalyzer {
         
         // Zugriff auf die Karten
         // ======================
+         
+         List<Card[]> players = new ArrayList<Card[]>();
+         
+         Card[]  player1_hole_cards =  tca.getPlayerHoleCards( 0 );         // player #1
+         players.add(player1_hole_cards);
+         Card[]  player2_hole_cards =  tca.getPlayerHoleCards( 1 );         // player #2
+         players.add(player2_hole_cards);
+         Card[]  player3_hole_cards =  tca.getPlayerHoleCards( 2 );         // player #3
+         players.add(player3_hole_cards);
+         Card[]  player4_hole_cards =  tca.getPlayerHoleCards( 3 );         // player #4
+         players.add(player4_hole_cards);
+         Card[]  player5_hole_cards =  tca.getPlayerHoleCards( 4 );         // player #5
+         players.add(player5_hole_cards);
         
-        Card[]  player1_hole_cards =  tca.getPlayerHoleCards( 0 );         // player #1
-        Card[]  player2_hole_cards =  tca.getPlayerHoleCards( 1 );         // player #2
-        Card[]  player3_hole_cards =  tca.getPlayerHoleCards( 2 );         // player #3
-        Card[]  player4_hole_cards =  tca.getPlayerHoleCards( 3 );         // player #4
-        Card[]  player5_hole_cards =  tca.getPlayerHoleCards( 4 );         // player #5
+         Card[]  community_cards =     tca.getCommunityCards();             // 
+         PokerHandEvaluator evaluator = new PokerHandEvaluator();
+         PokerHand[] resultOfTheGame = new PokerHand[players.size()];
+         HandRanking[] playersRanking = new HandRanking[players.size()];
+                 
+         int playerNumber = 0;
+         
+         
+         for (Card[] cards : players) {
+             
+             resultOfTheGame[playerNumber] = evaluator.evaluate(cards, community_cards);
+             playersRanking[playerNumber] = resultOfTheGame[playerNumber].getRanking();
+             
+             playerNumber++;
+         }
+         
+         int place = 1;
+         int actuallPlace = 1;
+         boolean wasChanged = false;
+         int[] playerPlace = new int[players.size()];
+         
+         HandRanking[] allRankings = HandRanking.values();
+
+         for (int i = allRankings.length - 1; i >= 0; i--) { // TODO: vereinchen
+             HandRanking hand = allRankings[i];
+             if (wasChanged == true) {
+                 place = actuallPlace;
+                 wasChanged = false;
+             }
+             playerNumber = 0;
+             for (HandRanking results : playersRanking) {
+                 if (results == hand) {
+                     playerPlace[playerNumber] = place;
+                     wasChanged = true;
+                     actuallPlace++;
+                 }
+                 playerNumber++;
+             }
+         }
+         
         
-        Card[]  community_cards =     tca.getCommunityCards();             // 
+         final Card[] pokerHandOfPlayer1 = resultOfTheGame[0].getPlayerCards();         
+         final Card[] pokerHandOfPlayer2 = resultOfTheGame[1].getPlayerCards();        
+         final Card[] pokerHandOfPlayer3 = resultOfTheGame[2].getPlayerCards();       
+         final Card[] pokerHandOfPlayer4 = resultOfTheGame[3].getPlayerCards();        
+         final Card[] pokerHandOfPlayer5 = resultOfTheGame[4].getPlayerCards();      
+         
+         // Wie heißt die jeweilige (Poker-)Hand
+         final HandRanking handRankingOfPlayer1 = resultOfTheGame[0].getRanking();
+         final HandRanking handRankingOfPlayer2 = resultOfTheGame[1].getRanking();
+         final HandRanking handRankingOfPlayer3 = resultOfTheGame[2].getRanking();
+         final HandRanking handRankingOfPlayer4 = resultOfTheGame[3].getRanking();
+         final HandRanking handRankingOfPlayer5 = resultOfTheGame[4].getRanking();
         
+         //
+         // Welche Position hat der Spieler - ist er Erster, Zweiter, Dritter , Vierter oder Fuenfter ?
+         final int positionOfPlayer1 = playerPlace[0];   
+         final int positionOfPlayer2 = playerPlace[1];   
+         final int positionOfPlayer3 = playerPlace[2];   
+         final int positionOfPlayer4 = playerPlace[3];      
+         final int positionOfPlayer5 = playerPlace[4];     
         
-        
-        
-        
-        for (Card card : player1_hole_cards) {
-            card.getRank();
-        }
-        
+         //
         
         
         // Ihre Berechnung
@@ -69,7 +140,7 @@ public class DummyForYourSolution implements GameAnalyzer {
         
         
         
-        
+       /*
         
         // Im Vorfeld berechnen der Ergebnisse
         //
@@ -91,9 +162,11 @@ public class DummyForYourSolution implements GameAnalyzer {
         final int positionOfPlayer1 = 2;    // Spieler1 ist Zweiter (zusammen mit Spieler5)  - dies ist nur ein Beispiel - Sie muessen dies berechnen
         final int positionOfPlayer2 = 1;    // Spieler2 ist Erster                           - dies ist nur ein Beispiel - Sie muessen dies berechnen
         final int positionOfPlayer3 = 4;    // Spieler3 ist Vierter (zusammen mit Spieler4)  - dies ist nur ein Beispiel - Sie muessen dies berechnen
-        final int positionOfPlayer4 = 4;    // Spieler4 ist Vierter (zusammen mit Spieler3)  - dies ist nur ein Beispiel - Sie muessen dies berechnen
-        final int positionOfPlayer5 = 2;    // Spieler5 ist Zweiter (zusammen mit Spieler1)  - dies ist nur ein Beispiel - Sie muessen dies berechnen
+        final int positionOfPlayer4 = 5;    // Spieler4 ist Vierter (zusammen mit Spieler3)  - dies ist nur ein Beispiel - Sie muessen dies berechnen
+        final int positionOfPlayer5 = 3;    // Spieler5 ist Zweiter (zusammen mit Spieler1)  - dies ist nur ein Beispiel - Sie muessen dies berechnen
         //
+        ///
+         */
         // Nachdem Sie alles berechnet haben
         
         

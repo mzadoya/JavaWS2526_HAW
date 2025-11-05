@@ -1,7 +1,7 @@
 package p1.a1x1.application.implementation;
 
-import application.cards.Card;
-import supportStuff.applicationSupport.HandRanking;
+import p1.a1x1.application.cards.Card;
+import p1.a1x1.supportStuff.applicationSupport.HandRanking;
 
 public class PokerHand {
     
