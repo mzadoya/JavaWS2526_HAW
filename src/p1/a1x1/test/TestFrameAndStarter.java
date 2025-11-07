@@ -2,7 +2,7 @@
 package p1.a1x1.test;
 
 
-import p1.a1x1.application.implementation.DummyForYourSolution;
+import p1.a1x1.application.implementation.TexasHoldemGame;
 import java.time.Clock;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -68,7 +68,7 @@ public class TestFrameAndStarter {
         System.out.printf( "\n" );
         System.out.flush();
         
-        final GameAnalyzer ga = new DummyForYourSolution();
+        final GameAnalyzer ga = new TexasHoldemGame();
         final TestExecutor te = new FieldSimulator( ga );
         te.execute();
         
