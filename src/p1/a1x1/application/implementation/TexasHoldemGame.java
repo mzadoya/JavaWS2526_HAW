@@ -26,7 +26,6 @@ import p1.a1x1.supportStuff.testSupport.ResultOfPlayer;
 import p1.a1x1.supportStuff.testSupport.TestCaseActual;
 
 
-
 /**
  * Implementiert die Spiellogik für Texas Hold'em Poker.
  * 
@@ -189,3 +188,4 @@ public class TexasHoldemGame implements GameAnalyzer {
     }// method()
 
 }// class
+

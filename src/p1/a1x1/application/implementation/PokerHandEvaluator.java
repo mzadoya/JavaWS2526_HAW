@@ -83,7 +83,9 @@ public class PokerHandEvaluator {
      */
     private void createCombinations(Card[] playerCards, Card[] communityCards) {
 
-        cardCombinations.add(communityCards);
+        Card[] boardCopy = Arrays.copyOf(communityCards, communityCards.length);
+        Arrays.sort(boardCopy);
+        cardCombinations.add(boardCopy);
 
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 5; j++) {
@@ -408,9 +410,11 @@ public class PokerHandEvaluator {
         if (cards[0].getRank().value() == 2 && cards[1].getRank().value() == 3 && cards[2].getRank().value() == 4
                 && cards[3].getRank().value() == 5 && cards[4].getRank().value() == 14) {
             
-            Card temp = cards[0];
-            cards[0] = cards[4];
-            cards[4] = temp;
+            Card ace = cards[4];
+            for (int i = 4; i > 0; i--) {
+                cards[i] = cards[i - 1];
+            }
+            cards[0] = ace;
             return true;
         }
 
@@ -646,7 +650,13 @@ public class PokerHandEvaluator {
      * 
      */
     private int compareStright(Card[] player1, Card[] player2) {
-        if (player1[player1.length - 1].getRank().value() > player2[player2.length - 1].getRank().value()) {
+        /*if (player1[0].getRank().value() == 14 && player1[player1.length-1].getRank().value() == 2){
+            return -1;
+        }
+        else if (player2[0].getRank().value() == 14 && player2[player2.length-1].getRank().value() == 2){
+            return 1;
+        }*/
+         if (player1[player1.length - 1].getRank().value() > player2[player2.length - 1].getRank().value()) {
             return 1;
         } else if (player1[player1.length - 1].getRank().value() < player2[player2.length - 1].getRank().value()) {
             return -1;
@@ -830,7 +840,7 @@ public class PokerHandEvaluator {
             }
         }
         Card[] toReturn = kickers.toArray(new Card[0]);
-        Arrays.sort(toReturn);
+        Arrays.sort(toReturn, java.util.Comparator.reverseOrder()); //TODO fix 
         return toReturn;
 
     }
@@ -852,7 +862,8 @@ public class PokerHandEvaluator {
      * 
      */
     public int compareTwoHands(Card[] player1, Card[] player2, HandRanking type) {
-
+        
+        
         switch (type) {
 
             case HIGH_CARD:
